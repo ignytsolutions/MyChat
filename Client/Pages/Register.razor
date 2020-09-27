@@ -11,7 +11,7 @@
         </p>
         <hr>
         <div class="row">
-            <div class="col-md-5">
+            <div class="col-md-4">
                 <EditForm OnValidSubmit="OnRegister" Model="registerRequest">
                     <h3 class="text-center"> Sign Up </h3>
                     <br />
@@ -39,17 +39,17 @@
                     <div class="form-group">
                         <label class="text-danger">@error</label>
                     </div>
-                    <div>
+                    <div class="text-center">
                         <button class="btn btn-md btn-primary" value="Register" type="submit">Create an Account</button>
                     </div>
                 </EditForm>
             </div>
 
-            <div class="col-md-2">
-                <!-------null------>
+            <div class="col-md-4">
+                &nbsp
             </div>
 
-            <div class="col-md-5">
+            <div class="col-md-4">
                 <EditForm OnValidSubmit="OnLogin" Model="loginRequest">
                     <h3 class="text-center"> Sign In </h3>
                     <br />
@@ -65,7 +65,7 @@
                     <div class="form-group">
                         <label class="text-danger">@error</label>
                     </div>
-                    <div>
+                    <div class="text-center">
                         <button class="btn btn-md btn-secondary" value="Login" type="submit">Login</button>
                     </div>
                 </EditForm>
