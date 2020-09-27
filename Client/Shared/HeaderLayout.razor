@@ -1,0 +1,18 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager navigationManager
+@inject CustomStateProvider authStateProvider
+
+<main class="container">
+    @Body
+</main>
+
+@functions{
+    [CascadingParameter]
+    Task<AuthenticationState> AuthenticationState { get; set; }
+
+    protected override async Task OnParametersSetAsync() {
+        if (!(await AuthenticationState).User.Identity.IsAuthenticated) {
+            navigationManager.NavigateTo("/register");
+        }
+    }
+}
