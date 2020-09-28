@@ -1,8 +1,11 @@
 ﻿@page "/"
 <AuthorizeView>
     <Authorized>
-        <h1>Hello @context.User.Identity.Name !!</h1>
-        <p>Welcome to Blazor Learner.</p>
+        <h1>Welcome to My Chat @context.User.Identity.Name</h1>
+        <hr />
+        <NavLink href="chat">
+            <h6 class="font-weight-bold text-center">Start Chatting</h6>
+        </NavLink>
     </Authorized>
     <Authorizing>
         <h1>Loading ...</h1>

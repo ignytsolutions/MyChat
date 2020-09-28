@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -39,12 +40,16 @@ namespace MyChat.Server.Controllers {
         public async Task<IActionResult> Register(RegisterRequest parameters) {
             var user = new ApplicationUser { UserName = parameters.UserName };
 
-            var result = await _userManager.CreateAsync(user, parameters.Password);
+            try {
+                var result = await _userManager.CreateAsync(user, parameters.Password);
 
-            if (!result.Succeeded) 
-                return BadRequest(result.Errors.FirstOrDefault()?.Description);
+                if (!result.Succeeded)
+                    return BadRequest(result.Errors.FirstOrDefault()?.Description);
 
-            return await Login(new LoginRequest { UserName = parameters.UserName,Password = parameters.Password });
+                return await Login(new LoginRequest { UserName = parameters.UserName, Password = parameters.Password });
+            } catch (Exception ex) {
+                throw ex;
+            }
         }
 
         [Authorize]

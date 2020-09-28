@@ -1,19 +1,15 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
 using MyChat.Server.Data;
 using MyChat.Server.Models;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.Linq;
 
 namespace MyChat.Server {
     public class Startup {
@@ -26,13 +22,12 @@ namespace MyChat.Server {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services) {
+            services.AddSignalR();
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
-            services.ConfigureApplicationCookie(options =>
-            {
+            services.ConfigureApplicationCookie(options => {
                 options.Cookie.HttpOnly = false;
-                options.Events.OnRedirectToLogin = context =>
-                {
+                options.Events.OnRedirectToLogin = context => {
                     context.Response.StatusCode = 401;
                     return Task.CompletedTask;
                 };
@@ -41,10 +36,16 @@ namespace MyChat.Server {
             services.AddControllers().AddNewtonsoftJson();
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddResponseCompression(opts => {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+            app.UseResponseCompression();
+
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
@@ -67,6 +68,8 @@ namespace MyChat.Server {
             app.UseEndpoints(endpoints => {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
+                // SignalR endpoint routing setup
+                endpoints.MapHub<Hubs.ChatHub>(Shared.ChatClient.HUBURL);
                 endpoints.MapFallbackToFile("index.html");
             });
         }

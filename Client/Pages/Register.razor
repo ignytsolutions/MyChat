@@ -5,12 +5,15 @@
 
 <div class="container-fluid">
     <div class="container">
-        <h2 class="text-center" id="title">My Chat - Login and Registration</h2>
+        <h2 class="text-center" id="title">My Chat - Registration</h2>
         <p class="text-center">
             <small class="text-muted">Welcome to My Chat, a simple chat application built on Blazor using SignalR</small>
         </p>
         <hr>
         <div class="row">
+            <div class="col-md-8 text-center">
+                <img src="images/MyChat.png" alt="My Chat" class="img-fluid" />
+            </div>
             <div class="col-md-4">
                 <EditForm OnValidSubmit="OnRegister" Model="registerRequest">
                     <h3 class="text-center"> Sign Up </h3>
@@ -42,32 +45,10 @@
                     <div class="text-center">
                         <button class="btn btn-md btn-primary" value="Register" type="submit">Create an Account</button>
                     </div>
-                </EditForm>
-            </div>
-
-            <div class="col-md-4">
-                &nbsp
-            </div>
-
-            <div class="col-md-4">
-                <EditForm OnValidSubmit="OnLogin" Model="loginRequest">
-                    <h3 class="text-center"> Sign In </h3>
                     <br />
-                    <DataAnnotationsValidator />
-                    <div class="form-group">
-                        <InputText id="inputUsername" class="form-control input-lg" placeholder="Username" autofocus @bind-Value="@loginRequest.UserName" />
-                        <ValidationMessage For="@(() => loginRequest.UserName)" />
-                    </div>
-                    <div class="form-group">
-                        <InputText id="inputPassword" class="form-control input-lg" placeholder="Password" autofocus @bind-Value="@loginRequest.Password" />
-                        <ValidationMessage For="@(() => loginRequest.Password)" />
-                    </div>
-                    <div class="form-group">
-                        <label class="text-danger">@error</label>
-                    </div>
-                    <div class="text-center">
-                        <button class="btn btn-md btn-secondary" value="Login" type="submit">Login</button>
-                    </div>
+                    <NavLink href="login">
+                        <h6 class="font-weight-normal text-center">Already Have an an account? Login Here.</h6>
+                    </NavLink>
                 </EditForm>
             </div>
         </div>
@@ -75,20 +56,9 @@
 </div>
 
 @code{
-    LoginRequest loginRequest { get; set; } = new LoginRequest();
     RegisterRequest registerRequest { get; set; } = new RegisterRequest();
     string error { get; set; }
 
-    async Task OnLogin() {
-        error = null;
-        try {
-            await authStateProvider.Login(loginRequest);
-
-            navigationManager.NavigateTo("");
-        } catch (Exception ex) {
-            error = ex.Message;
-        }
-    }
 
     async Task OnRegister() {
         error = null;

@@ -20,6 +20,7 @@ namespace MyChat.Client {
             builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomStateProvider>());
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
             await builder.Build().RunAsync();
         }
     }
