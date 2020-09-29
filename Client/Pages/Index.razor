@@ -1,13 +1,40 @@
 ﻿@page "/"
+@inject NavigationManager navigationManager
+@inject CustomStateProvider authStateProvider
+
 <AuthorizeView>
     <Authorized>
-        <h1>Welcome to My Chat @context.User.Identity.Name</h1>
-        <hr />
-        <NavLink href="chat">
-            <h6 class="font-weight-bold text-center">Start Chatting</h6>
-        </NavLink>
+        <div class="container">
+            <br />
+            <div class="row">
+                <div class="col-md-10"></div>
+                <div class="col-md-1 text-md-right">
+                    <button class="btn btn-sm btn-success ml-md-auto" @onclick="@StartChat">Start</button>
+                </div>
+                <div class="col-md-1 text-md-right">
+                    <button class="btn btn-sm btn-warning ml-md-auto" @onclick="@OnLogout">Logout</button>
+                </div>
+            </div>
+            <hr />
+            <div class="text-center"><h1>Welcome to My Chat @context.User.Identity.Name</h1></div>
+            <div class="text-center">This application demonstrates the use of SignalR in a blazor application buit on Webassembly.</div>
+        </div>
     </Authorized>
     <Authorizing>
-        <h1>Loading ...</h1>
+        <div style="position:absolute; top:30vh; width:100%; text-align:center">
+            <p><i class="fas fa-spin fa-spinner"></i> My Chat is loading</p>
+        </div>
     </Authorizing>
 </AuthorizeView>
+
+@code  {
+    private void StartChat() {
+        navigationManager.NavigateTo("/chat");
+    }
+
+    private async Task OnLogout() {
+        await authStateProvider.Logout();
+
+        navigationManager.NavigateTo("/login");
+    }
+}

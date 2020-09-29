@@ -32,11 +32,11 @@
                         <ValidationMessage For="@(() => registerRequest.UserName)" />
                     </div>
                     <div class="form-group">
-                        <InputText id="inputPassword" class="form-control input-lg" placeholder="Password" autofocus @bind-Value="@registerRequest.Password" />
+                        <InputText id="inputPassword" type="password" class="form-control input-lg" placeholder="Password" autofocus @bind-Value="@registerRequest.Password" />
                         <ValidationMessage For="@(() => registerRequest.Password)" />
                     </div>
                     <div class="form-group">
-                        <InputText id="inputPasswordConfirm" class="form-control input-lg" placeholder="Password Confirm" autofocus @bind-Value="@registerRequest.PasswordConfirm" />
+                        <InputText id="inputPasswordConfirm" type="password" class="form-control input-lg" placeholder="Password Confirm" autofocus @bind-Value="@registerRequest.PasswordConfirm" />
                         <ValidationMessage For="@(() => registerRequest.PasswordConfirm)" />
                     </div>
                     <div class="form-group">

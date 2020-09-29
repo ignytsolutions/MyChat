@@ -1,130 +1,74 @@
 ﻿@page "/chat"
 @inject NavigationManager navigationManager
-@using MyChat.Shared
 @inject CustomStateProvider authStateProvider
-
+@using MyChat.Shared
 
 <div class="top-row px-4">
-    @if (chatting) {
-        <p>You are connected as <b>@username</b></p>
-        <button class="btn btn-sm btn-warning ml-md-auto" @onclick="@DisconnectAsync">Disconnect</button>
-    }
+    <button class="btn btn-sm btn-warning ml-md-auto" @onclick="@DisconnectAsync">Disconnect</button>
 </div>
 
 <div class="content px-4">
-    @if (chatting) {
-        <div id="scrollbox">
+    <div id="scrollbox">
+        @foreach (var item in messages) {
+            <div class="@item.CSS">
+                <div class="msg">@item.Body</div>
+                <div class="description">@item.ToString()</div>
+            </div>
+        }
 
-            @foreach (var item in messages) {
-                <div class="@item.CSS">
-                    <div class="user">@item.Username</div>
-                    <div class="msg">@item.Body</div>
+        <hr />
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <textarea class="input-lg" placeholder="Enter your message" @bind="@newMessage"></textarea>
                 </div>
-            }
-            <hr />
-            <textarea class="input-lg" placeholder="enter your comment" @bind="@newMessage"></textarea>
-            <button class="btn btn-default" @onclick="@SendAsync">Send</button>
+                <div class="col-md-12 text-md-right">
+                    <button class="btn btn-sm btn-success" @onclick="@SendAsync">Send</button>
+                </div>
+            </div>
         </div>
-    }
+    </div>
 </div>
 
 @code  {
-    // flag to indicate chat status
-    bool chatting = false;
-
-    // name of the user who will be chatting
-    string username = null;
+    string username = string.Empty;
+    string message = string.Empty;
+    string newMessage = string.Empty;
 
     ChatClient client = null;
-
-    // on-screen message
-    string message = null;
-
-    // new message input
-    string newMessage = null;
-
-    // list of messages in chat
     List<Message> messages = new List<Message>();
 
     protected override async Task OnInitializedAsync() {
-        // remove old messages if any
-        messages.Clear();
-
-        // Create the chat client
         string baseUrl = navigationManager.BaseUri;
         var authState = await authStateProvider.GetAuthenticationStateAsync();
         var username = authState.User.Identity.Name;
 
-        client = new ChatClient(username, baseUrl);
-        // add an event handler for incoming messages
+        messages.Clear();
+
+        client = new ChatClient(authState.User.Identity.Name, baseUrl);
         client.MessageReceived += MessageReceived;
 
-        // start the client
-        Console.WriteLine("Index: Chat starting...");
-
         await client.StartAsync();
-
-        Console.WriteLine("Index: Chat started?");
-
-        chatting = true;
     }
 
-    /// <summary>
-    /// Inbound message
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    void MessageReceived(object sender, MessageReceivedEventArgs e) {
-        Console.WriteLine($"Blazor: receive {e.Username}: {e.Message}");
+    private void MessageReceived(object sender, MessageReceivedEventArgs e) {
         bool isMine = false;
-        if (!string.IsNullOrWhiteSpace(e.Username)) {
+
+        if (!string.IsNullOrWhiteSpace(e.Username))
             isMine = string.Equals(e.Username, username, StringComparison.CurrentCultureIgnoreCase);
-        }
 
-        var newMsg = new Message(e.Username, e.Message, isMine);
-        messages.Add(newMsg);
+        messages.Add(new Message(e.Username, e.Message, isMine));
 
-        // Inform blazor the UI needs updating
         StateHasChanged();
     }
 
-    async Task DisconnectAsync() {
-        if (chatting) {
-            await client.StopAsync();
-            client = null;
-            message = "chat ended";
-            chatting = false;
-        }
+    private async Task DisconnectAsync() {
+        await client.StopAsync();
+        navigationManager.NavigateTo("/");
     }
 
-    async Task SendAsync() {
-        if (chatting && !string.IsNullOrWhiteSpace(newMessage)) {
-            // send message to hub
+    private async Task SendAsync() {
+        if (!string.IsNullOrWhiteSpace(newMessage))
             await client.SendAsync(newMessage);
-            // clear input box
-            newMessage = "";
-        }
     }
-
-    class Message {
-        public Message(string username, string body, bool mine) {
-            Username = username;
-            Body = body;
-            Mine = mine;
-        }
-
-        public string Username { get; set; }
-        public string Body { get; set; }
-        public bool Mine { get; set; }
-
-        /// <summary>
-        /// Determine CSS classes to use for message div
-        /// </summary>
-        public string CSS {
-            get {
-                return Mine ? "sent" : "received";
-            }
-        }
-    }
-
 }

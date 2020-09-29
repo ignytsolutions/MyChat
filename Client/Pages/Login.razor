@@ -24,7 +24,7 @@
                         <ValidationMessage For="@(() => loginRequest.UserName)" />
                     </div>
                     <div class="form-group">
-                        <InputText id="inputPassword" class="form-control input-lg" placeholder="Password" autofocus @bind-Value="@loginRequest.Password" />
+                        <InputText id="inputPassword" type="password" class="form-control input-lg" placeholder="Password" autofocus @bind-Value="@loginRequest.Password" />
                         <ValidationMessage For="@(() => loginRequest.Password)" />
                     </div>
                     <div class="form-group">
@@ -40,10 +40,10 @@
 </div>
 
 @code{
-    LoginRequest loginRequest { get; set; } = new LoginRequest();
-    string error { get; set; }
+    private LoginRequest loginRequest { get; set; } = new LoginRequest();
+    private string error { get; set; }
 
-    async Task OnLogin() {
+    private async Task OnLogin() {
         error = null;
         try {
             await authStateProvider.Login(loginRequest);
